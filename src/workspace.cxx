@@ -6,6 +6,7 @@
 #include "agent.hxx"
 #include "vector.hxx"
 #include "workspace.hxx"
+#include <omp.h>
 
 Workspace::Workspace(ArgumentParser &parser)
 {
@@ -44,22 +45,32 @@ void Workspace::init(){
   // Random generator seed
   srand48(std::time(0));
 
-  // Initialize agents
-  // This loop may be quite expensive due to random number generation
-  for(size_t j = 0; j < na; j++){
-    // Create random position
-    //Vector position(lx*(0.02 + drand48()), ly*(0.02 + drand48()), lz*(0.02 + drand48()));
-    Vector position(lx*(0.02 + drand48()), ly*(0.02 + drand48()), lz*(0.02 + drand48()));
-    Vector velocity(160 * (drand48() - 0.5), 160*(drand48()- 0.5), 160*(drand48() - 0.5));
+#pragma omp parallel
+{
+    int k = 0;
 
-    // Create random velocity
-    agents.push_back(Agent(position, velocity, Zeros()));
-    agents.back().max_force = max_force;
-    agents.back().max_speed = max_speed;
-    agents.back().ra = rAlignment;
-    agents.back().rc = rCohesion;
-    agents.back().rs = rSeparation;
-  }
+    int tid = omp_get_thread_num();
+    int max = omp_get_max_threads();
+
+    // Initialize agents
+    // This loop may be quite expensive due to random number generation
+    for(k = na * (int)(tid/max); k< na * (int)(tid+1/max); k++){
+        // Create random position
+        //Vector position(lx*(0.02 + drand48()), ly*(0.02 + drand48()), lz*(0.02 + drand48()));
+        Vector position(lx*(0.02 + drand48()), ly*(0.02 + drand48()), lz*(0.02 + drand48()));
+        Vector velocity(160 * (drand48() - 0.5), 160*(drand48()- 0.5), 160*(drand48() - 0.5));
+
+        // Create random velocity
+        agents.push_back(Agent(position, velocity, Zeros()));
+        agents.back().max_force = max_force;
+        agents.back().max_speed = max_speed;
+        agents.back().ra = rAlignment;
+        agents.back().rc = rCohesion;
+        agents.back().rs = rSeparation;
+    }
+
+}
+
 }
 
 void Workspace::move()
@@ -73,8 +84,15 @@ void Workspace::move()
         + agents[k].separation*wSeparation;
     }
 
+#pragma omp parallel
+{
+    int k = 0;
+
+    int tid = omp_get_thread_num();
+    int max = omp_get_max_threads();
+
     // Time integraion using euler method
-    for(size_t k = 0; k< na; k++){
+    for(k = na * (int)(tid/max); k< na * (int)(tid+1/max); k++){
       agents[k].velocity += dt*agents[k].direction;
 
       double speed = agents[k].velocity.norm()/max_speed;
@@ -95,8 +113,10 @@ void Workspace::move()
         agents[k].position.z = lz - 40;
       if(agents[k].position.z >lz - 40)
         agents[k].position.z = 40;
-
     }
+
+}
+
 }
 
 void Workspace::simulate(int nsteps) {
@@ -106,9 +126,10 @@ void Workspace::simulate(int nsteps) {
     // perform nsteps time steps of the simulation
     int step = 0;
     while (step++ < nsteps) {
-      this->move();
-      // store every 20 steps
-      if (step%20 == 0) save(step);
+        fprintf(stderr, "steps %i", step);
+        this->move();
+        // store every 20 steps
+        if (step%20 == 0) save(step);
     }
 }
 
