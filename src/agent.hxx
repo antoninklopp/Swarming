@@ -5,38 +5,40 @@
 #include "vector.hxx"
 #include <vector>
 
-using namespace std; 
+using namespace std;
 
-typedef enum {
-  prey,
-  predator,
-  active,
-  wall
+typedef enum
+{
+	prey,
+	predator,
+	active,
+	wall
 } AgentType;
 
-class Agent{
-  public :
-    Vector position;
-    Vector velocity;
-    Vector direction;
+class Agent
+{
+  public:
+	Vector position;
+	Vector velocity;
+	Vector direction;
 
-    Vector cohesion;
-    Vector separation;
-    Vector alignment;
+	Vector cohesion;
+	Vector separation;
+	Vector alignment;
 
-    double max_speed;
-    double max_force;
+	double max_speed;
+	double max_force;
 
-    // Distance of influence
-    double rc, rs, ra;
+	// Distance of influence
+	double rc, rs, ra;
 
-    Agent(); 
+	Agent();
 
-    Agent(const Vector &pos, const Vector &vel, const Vector &dir);
+	Agent(const Vector &pos, const Vector &vel, const Vector &dir);
 
-    void compute_force(vector<Agent> &agent_list, size_t index, double dist);
+	void compute_force(vector<Agent> &agent_list, size_t index, double dist);
 
-    size_t find_closest(vector<Agent> &agent_list, size_t index);
+	size_t find_closest(vector<Agent> &agent_list, size_t index);
 };
 
 #endif

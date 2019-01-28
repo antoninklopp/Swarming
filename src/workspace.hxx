@@ -1,53 +1,51 @@
 /*
 */
-#ifndef  WORKSPACE
-#define  WORKSPACE
+#ifndef WORKSPACE
+#define WORKSPACE
 
 #include "parser.hxx"
 #include "types.hxx"
 
-
 class Workspace
 {
-protected:
-  vector<Agent> agents;
-  unsigned int na;
+  protected:
+	vector<Agent> agents;
+	unsigned int na;
 
-  Real dt;
-  int time;
+	Real dt;
+	int time;
 
-  Real wCohesion, wAlignment, wSeparation;
-  Real rCohesion, rAlignment, rSeparation;
-  Real maxU;
+	Real wCohesion, wAlignment, wSeparation;
+	Real rCohesion, rAlignment, rSeparation;
+	Real maxU;
 
-  Real max_speed;
-  Real max_force;
+	Real max_speed;
+	Real max_force;
 
-  Real tUpload, tDownload, tCohesion, tAlignment, tSeparation;
+	Real tUpload, tDownload, tCohesion, tAlignment, tSeparation;
 
-  // Size of the domain
-  Real lx, ly, lz;
+	// Size of the domain
+	Real lx, ly, lz;
 
-  // Lower bound of the domain
-  Real xmin, ymin, zmin;
+	// Lower bound of the domain
+	Real xmin, ymin, zmin;
 
-  // Padding around the domain
-  Real padding;
+	// Padding around the domain
+	Real padding;
 
+	Real domainsize;
+	void init();
 
-  Real domainsize;
-  void init();
+  public:
+	Workspace(ArgumentParser &parser);
 
-public:
-  Workspace(ArgumentParser &parser);
+	Workspace(size_t nAgents,
+			  Real wc, Real wa, Real ws,
+			  Real rc, Real ra, Real rs);
 
-  Workspace(size_t nAgents,
-  Real wc, Real wa, Real ws,
-  Real rc, Real ra, Real rs);
-
-  void move();
-  void simulate(int nsteps);
-  void save(int stepid);
+	void move();
+	void simulate(int nsteps);
+	void save(int stepid);
 };
 
 #endif
