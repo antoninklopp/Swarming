@@ -1,2 +1,0 @@
-/user/2/.base/klopptoa/home/Documents/3A/Swarming/bin/src/CMakeFiles/lib_boids.dir
-/user/2/.base/klopptoa/home/Documents/3A/Swarming/bin/src/CMakeFiles/main.dir

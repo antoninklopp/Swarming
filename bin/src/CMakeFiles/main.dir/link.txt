@@ -1,1 +1,0 @@
-/usr/bin/c++       CMakeFiles/main.dir/main.cxx.o  -o main -rdynamic liblib_boids.so -Wl,-rpath,/user/2/.base/klopptoa/home/Documents/3A/Swarming/bin/src 
