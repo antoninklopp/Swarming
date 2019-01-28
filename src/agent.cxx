@@ -1,5 +1,9 @@
 #include "agent.hxx"
 
+Agent::Agent(){
+  
+}
+
 Agent::Agent(const Vector &pos, const Vector &vel, const Vector &dir){
   position = pos;
   velocity = vel;
@@ -9,7 +13,7 @@ Agent::Agent(const Vector &pos, const Vector &vel, const Vector &dir){
 }
 
 
-void Agent::compute_force(Container &agent_list, size_t index, double rad) {
+void Agent::compute_force(vector<Agent> &agent_list, size_t index, double rad) {
   cohesion = Zeros();
   alignment = Zeros();
   separation = Zeros();
@@ -71,7 +75,7 @@ void Agent::compute_force(Container &agent_list, size_t index, double rad) {
   }
 }
 
-size_t Agent::find_closest(Container &agent_list, size_t index) {
+size_t Agent::find_closest(vector<Agent> &agent_list, size_t index) {
   size_t closest_agent = index;
   double min_dist = 1000;
 

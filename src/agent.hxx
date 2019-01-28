@@ -3,6 +3,7 @@
 
 #include "types.hxx"
 #include "vector.hxx"
+#include <vector>
 
 using namespace std; 
 
@@ -29,11 +30,13 @@ class Agent{
     // Distance of influence
     double rc, rs, ra;
 
+    Agent(); 
+
     Agent(const Vector &pos, const Vector &vel, const Vector &dir);
 
-    void compute_force(Container &agent_list, size_t index, double dist);
+    void compute_force(vector<Agent> &agent_list, size_t index, double dist);
 
-    size_t find_closest(Container &agent_list, size_t index);
+    size_t find_closest(vector<Agent> &agent_list, size_t index);
 };
 
 #endif

@@ -10,7 +10,7 @@
 class Workspace
 {
 protected:
-  Container agents;
+  vector<Agent> agents;
   unsigned int na;
 
   Real dt;

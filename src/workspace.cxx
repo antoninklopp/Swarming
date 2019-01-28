@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <ctime>
+#include <vector>
 
 #include "agent.hxx"
 #include "vector.hxx"
@@ -23,6 +24,7 @@ Workspace::Workspace(ArgumentParser &parser)
   dt= 0.01;
   max_speed = 20.0;
   max_force = 80.0;
+  agents.resize(na);
   time = 0.,
 
   this->init();}
@@ -45,7 +47,7 @@ void Workspace::init(){
   // Random generator seed
   srand48(std::time(0));
 
-#pragma omp parallel
+#pragma omp parallel 
 {
     int k = 0;
 
@@ -54,19 +56,19 @@ void Workspace::init(){
 
     // Initialize agents
     // This loop may be quite expensive due to random number generation
-    for(k = na * (int)(tid/max); k< na * (int)(tid+1/max); k++){
+    for(k = (int)(na * tid/max); k < (int)(na * (tid+1)/max); k++){
         // Create random position
         //Vector position(lx*(0.02 + drand48()), ly*(0.02 + drand48()), lz*(0.02 + drand48()));
         Vector position(lx*(0.02 + drand48()), ly*(0.02 + drand48()), lz*(0.02 + drand48()));
         Vector velocity(160 * (drand48() - 0.5), 160*(drand48()- 0.5), 160*(drand48() - 0.5));
 
         // Create random velocity
-        agents.push_back(Agent(position, velocity, Zeros()));
-        agents.back().max_force = max_force;
-        agents.back().max_speed = max_speed;
-        agents.back().ra = rAlignment;
-        agents.back().rc = rCohesion;
-        agents.back().rs = rSeparation;
+        agents[k] = Agent(position, velocity, Zeros());
+        agents[k].max_force = max_force;
+        agents[k].max_speed = max_speed;
+        agents[k].ra = rAlignment;
+        agents[k].rc = rCohesion;
+        agents[k].rs = rSeparation;
     }
 
 }
@@ -92,7 +94,7 @@ void Workspace::move()
     int max = omp_get_max_threads();
 
     // Time integraion using euler method
-    for(k = na * (int)(tid/max); k< na * (int)(tid+1/max); k++){
+    for(k = (int)(na * tid/max); k < (int)(na * (tid+1)/max); k++){
       agents[k].velocity += dt*agents[k].direction;
 
       double speed = agents[k].velocity.norm()/max_speed;
@@ -126,7 +128,6 @@ void Workspace::simulate(int nsteps) {
     // perform nsteps time steps of the simulation
     int step = 0;
     while (step++ < nsteps) {
-        fprintf(stderr, "steps %i", step);
         this->move();
         // store every 20 steps
         if (step%20 == 0) save(step);

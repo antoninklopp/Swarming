@@ -7,6 +7,5 @@
 class Agent;
 
 typedef double Real;
-typedef std::deque<Agent> Container;
 
 #endif
