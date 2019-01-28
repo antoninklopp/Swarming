@@ -77,18 +77,27 @@ void Workspace::init(){
 
 void Workspace::move()
 {
-    // Compute forces applied on specific agent
-    for(size_t k = 0; k< na; k++){
+
+    int k = 0;
+  
+#pragma omp parallel
+{
+
+    int tid = omp_get_thread_num();
+    int max = omp_get_max_threads();
+
+    // Time integraion using euler method
+    for(k = (int)(na * tid/max); k < (int)(na * (tid+1)/max); k++){
       agents[k].compute_force(agents, k, rCohesion);
 
       agents[k].direction = agents[k].cohesion*wCohesion
         + agents[k].alignment*wAlignment
         + agents[k].separation*wSeparation;
     }
+}
 
 #pragma omp parallel
 {
-    int k = 0;
 
     int tid = omp_get_thread_num();
     int max = omp_get_max_threads();
