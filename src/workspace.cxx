@@ -24,7 +24,7 @@ Workspace::Workspace(ArgumentParser &parser)
 	dt = 0.01;
 	max_speed = 20.0;
 	max_force = 80.0;
-	agents.resize(na);
+	agents.resize(PADDING_GRID*PADDING_GRID*PADDING_GRID);
 	time = 0.,
 
 	this->init();
@@ -50,6 +50,8 @@ void Workspace::init()
 	// Random generator seed
 	srand48(std::time(0));
 
+	
+
 #pragma omp parallel
 	{
 		int k = 0;
@@ -66,13 +68,29 @@ void Workspace::init()
 			Vector position(lx * (0.02 + drand48()), ly * (0.02 + drand48()), lz * (0.02 + drand48()));
 			Vector velocity(160 * (drand48() - 0.5), 160 * (drand48() - 0.5), 160 * (drand48() - 0.5));
 
+			int position_x = (int)(position.x/PADDING_GRID); 
+			int position_y = (int)(position.y/PADDING_GRID); 
+			int position_z = (int)(position.z/PADDING_GRID); 
+
+			int current_agent = 0; 
 			// Create random velocity
-			agents[k] = Agent(position, velocity, Zeros());
-			agents[k].max_force = max_force;
-			agents[k].max_speed = max_speed;
-			agents[k].ra = rAlignment;
-			agents[k].rc = rCohesion;
-			agents[k].rs = rSeparation;
+			#pragma omp critical 
+			{
+			agents[position_x * PADDING_GRID * PADDING_GRID + 
+				position_y * PADDING_GRID + position_z].push_back(Agent(position, velocity, Zeros()));
+			current_agent = agents[position_x * PADDING_GRID * PADDING_GRID + 
+				position_y * PADDING_GRID + position_z].size() - 1; 
+			}
+			agents[position_x * PADDING_GRID * PADDING_GRID + 
+				position_y * PADDING_GRID + position_z][current_agent].max_force = max_force;
+			agents[position_x * PADDING_GRID * PADDING_GRID + 
+				position_y * PADDING_GRID + position_z][current_agent].max_speed = max_speed;
+			agents[position_x * PADDING_GRID * PADDING_GRID + 
+				position_y * PADDING_GRID + position_z][current_agent].ra = rAlignment;
+			agents[position_x * PADDING_GRID * PADDING_GRID + 
+				position_y * PADDING_GRID + position_z][current_agent].rc = rCohesion;
+			agents[position_x * PADDING_GRID * PADDING_GRID + 
+				position_y * PADDING_GRID + position_z][current_agent].rs = rSeparation;
 		}
 	}
 }
@@ -81,6 +99,7 @@ void Workspace::move()
 {
 
 	int k = 0;
+	int sum_num_grid = PADDING_GRID * PADDING_GRID * PADDING_GRID; 
 
 #pragma omp parallel
 	{
@@ -89,11 +108,13 @@ void Workspace::move()
 		int max = omp_get_max_threads();
 
 		// Time integraion using euler method
-		for (k = (int)(na * tid / max); k < (int)(na * (tid + 1) / max); k++)
+		for (k = (int)(sum_num_grid * tid / max); k < (int)(sum_num_grid * (tid + 1) / max); k++)
 		{
-			agents[k].compute_force(agents, k, rCohesion);
+			for (int i = 0; i < agents[k].size(); i++){
+				agents[k][i].compute_force(agents, k, rCohesion);
 
-			agents[k].direction = agents[k].cohesion * wCohesion + agents[k].alignment * wAlignment + agents[k].separation * wSeparation;
+				agents[k][i].direction = agents[k][i].cohesion * wCohesion + agents[k][i].alignment * wAlignment + agents[k][i].separation * wSeparation;
+			}
 		}
 	}
 

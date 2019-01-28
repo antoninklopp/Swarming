@@ -6,10 +6,12 @@
 #include "parser.hxx"
 #include "types.hxx"
 
+const float PADDING_GRID=10; 
+
 class Workspace
 {
   protected:
-	vector<Agent> agents;
+	vector<vector<Agent> > agents;
 	unsigned int na;
 
 	Real dt;
