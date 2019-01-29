@@ -1,4 +1,6 @@
 #include "agent.hxx"
+#include <initializer_list>
+#include <algorithm>
 
 Agent::Agent()
 {
@@ -13,30 +15,40 @@ Agent::Agent(const Vector &pos, const Vector &vel, const Vector &dir)
 	max_force = 20.0;
 }
 
-void Agent::compute_force(vector<Agent> &agent_list, size_t index, double rad)
+void Agent::compute_force(vector<vector<Agent> > &agent_list, size_t index_list, size_t index_x, size_t index_y, size_t index_z, Real lx, Real ly, Real lz, double rad)
 {
 	cohesion = Zeros();
 	alignment = Zeros();
 	separation = Zeros();
 
+	int max_dist = std::max({rs, rc, ra});
+
 	int count_c = 0, count_s = 0, count_a = 0;
-	for (size_t i = 0; i < agent_list.size(); i++)
-	{
-		Real dist = (this->position - agent_list[i].position).norm();
-		if (i != index && dist < rs && dist > 0.)
-		{
-			separation += (this->position - agent_list[i].position).normalized() / dist;
-			++count_s;
-		}
-		if (i != index && dist < ra)
-		{
-			alignment += agent_list[i].velocity;
-			++count_a;
-		}
-		if (i != index && dist < rc)
-		{
-			cohesion += agent_list[i].position;
-			++count_c;
+	for (int x = index_x - (int)(max_dist/PADDING_GRID); x < (index_x + (int)(max_dist/PADDING_GRID)) && (int)(lx/PADDING_GRID); x++){
+		for (int y = index_y - (int)(max_dist/PADDING_GRID); y < (index_y + (int)(max_dist/PADDING_GRID)) && (int)(ly/PADDING_GRID); y++){
+			for (int z = index_z - (int)(max_dist/PADDING_GRID); z < (index_z + (int)(max_dist/PADDING_GRID)) && (int)(lz/PADDING_GRID); z++){
+				vector<Agent> current_list = agent_list[x * PADDING_GRID * PADDING_GRID + y * PADDING_GRID + z];
+				for (size_t i = 0; i < current_list.size(); i++)
+				{
+					Real dist = (this->position - current_list[i].position).norm();
+					bool checkNotCurrent = (i==index_list) && (x==index_x) && (y == index_y) && (z == index_z);
+					if (!checkNotCurrent && dist < rs && dist > 0.)
+					{
+						separation += (this->position - current_list[i].position).normalized() / dist;
+						++count_s;
+					}
+					if (!checkNotCurrent && dist < ra)
+					{
+						alignment += current_list[i].velocity;
+						++count_a;
+					}
+					if (!checkNotCurrent && dist < rc)
+					{
+						cohesion += current_list[i].position;
+						++count_c;
+					}
+				}
+			}
 		}
 	}
 

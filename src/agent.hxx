@@ -4,6 +4,7 @@
 #include "types.hxx"
 #include "vector.hxx"
 #include <vector>
+#include "workspace.hxx"
 
 using namespace std;
 
@@ -36,7 +37,8 @@ class Agent
 
 	Agent(const Vector &pos, const Vector &vel, const Vector &dir);
 
-	void compute_force(vector<Agent> &agent_list, size_t index, double dist);
+	void compute_force(vector<vector<Agent> > &agent_list, size_t index_list, size_t index_x,
+		size_t index_y, size_t index_z, Real lx, Real ly, Real lz, double rad);
 
 	size_t find_closest(vector<Agent> &agent_list, size_t index);
 };
