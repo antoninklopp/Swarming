@@ -21,13 +21,18 @@ void Agent::compute_force(vector<vector<Agent> > &agent_list, size_t index_list,
 	alignment = Zeros();
 	separation = Zeros();
 
+	int size_vec_x = (int)(lx / PADDING_GRID);
+	int size_vec_y = (int)(ly / PADDING_GRID);
+	int size_vec_z = (int)(lz / PADDING_GRID);
+
 	int max_dist = std::max({rs, rc, ra});
 
 	int count_c = 0, count_s = 0, count_a = 0;
 	for (int x = index_x - (int)(max_dist/PADDING_GRID); x < (index_x + (int)(max_dist/PADDING_GRID)) && (int)(lx/PADDING_GRID); x++){
 		for (int y = index_y - (int)(max_dist/PADDING_GRID); y < (index_y + (int)(max_dist/PADDING_GRID)) && (int)(ly/PADDING_GRID); y++){
 			for (int z = index_z - (int)(max_dist/PADDING_GRID); z < (index_z + (int)(max_dist/PADDING_GRID)) && (int)(lz/PADDING_GRID); z++){
-				vector<Agent> current_list = agent_list[x * PADDING_GRID * PADDING_GRID + y * PADDING_GRID + z];
+				int k = x * size_vec_y * size_vec_z + y * size_vec_z + z;
+				vector<Agent> current_list = agent_list[k];
 				for (size_t i = 0; i < current_list.size(); i++)
 				{
 					Real dist = (this->position - current_list[i].position).norm();

@@ -50,11 +50,13 @@ void Workspace::init()
 	// Random generator seed
 	srand48(std::time(0));
 
+	int number_grid_case = PADDING_GRID * PADDING_GRID * PADDING_GRID;
+
 	int k = 0;
 	int size_vec_x = (int)(lx / PADDING_GRID);
 	int size_vec_y = (int)(ly / PADDING_GRID);
 	int size_vec_z = (int)(lz / PADDING_GRID);
-	
+
 	agents.resize(size_vec_x * size_vec_y * size_vec_z);
 
 #pragma omp parallel private(k) shared(size_vec_z, size_vec_y, size_vec_x)
@@ -70,18 +72,18 @@ void Workspace::init()
 		for (int div_x = 0; div_x < PADDING_CORE; div_x ++){
 			for (int div_y = 0; div_y < PADDING_CORE; div_y ++){
 				for (int div_z = 0; div_z < PADDING_CORE; div_z ++){
-					if (div_x * PADDING_CORE * PADDING_CORE + div_y * PADDING_CORE + div_z % max != tid){
+					if ((div_x * PADDING_CORE * PADDING_CORE + div_y * PADDING_CORE + div_z) % max != tid){
 						continue;
 					}
 					for (size_t x = (int)((div_x * size_vec_x)/PADDING_CORE); x < (int)(((div_x+1) * size_vec_x)/PADDING_CORE); x++){
 						for (size_t y = (int)((div_y * size_vec_y)/PADDING_CORE); y < (int)(((div_y+1) * size_vec_y)/PADDING_CORE); y++){
 							for (size_t z = (int)((div_z * size_vec_z)/PADDING_CORE); z < (int)(((div_z+1) * size_vec_z)/PADDING_CORE); z++){
-								k = x * PADDING_GRID * PADDING_GRID + y * PADDING_GRID + z;
-								for (size_t i = 0; i < agents[k].size(); i++){
-									cout << "k" << k  << "size_vec" << agents.size() << endl;
+								k = x * size_vec_y * size_vec_z + y * size_vec_z + z;
+								for (size_t i = 0; i < na/number_grid_case+1; i++){
 									// Create random position
 									//Vector position(lx*(0.02 + drand48()), ly*(0.02 + drand48()), lz*(0.02 + drand48()));
-									Vector position(lx * (0.02 + drand48()), ly * (0.02 + drand48()), lz * (0.02 + drand48()));
+									Vector position(x * PADDING_GRID + (0.02 + drand48()) * PADDING_GRID, y *
+										PADDING_GRID + (0.02 + drand48()) * PADDING_GRID, z * PADDING_GRID + PADDING_GRID * (0.02 + drand48()));
 									Vector velocity(160 * (drand48() - 0.5), 160 * (drand48() - 0.5), 160 * (drand48() - 0.5));
 
 									// Create random velocity
@@ -99,6 +101,8 @@ void Workspace::init()
 			}
 		}
 	}
+
+	cout << "FINISHED INITIALIZATION" << endl;
 }
 
 void Workspace::move()
@@ -124,7 +128,7 @@ void Workspace::move()
 					for (size_t x = (int)((div_x * size_vec_x)/PADDING_CORE); x < (int)(((div_x+1) * size_vec_x)/PADDING_CORE); x++){
 						for (size_t y = (int)((div_y * size_vec_y)/PADDING_CORE); y < (int)(((div_y+1) * size_vec_y)/PADDING_CORE); y++){
 							for (size_t z = (int)((div_z * size_vec_z)/PADDING_CORE); z < (int)(((div_z+1) * size_vec_z)/PADDING_CORE); z++){
-								k = x * PADDING_GRID * PADDING_GRID + y * PADDING_GRID + z;
+								k = x * size_vec_y * size_vec_z + y * size_vec_z + z;
 								for (size_t i = 0; i < agents[k].size(); i++){
 									agents[k][i].compute_force(agents, i, x, y, z, lx, ly, lz, rCohesion);
 
@@ -149,39 +153,58 @@ void Workspace::move()
 		// }
 	}
 
-#pragma omp parallel private(k)
+#pragma omp parallel private(k) shared(size_vec_z, size_vec_y, size_vec_x)
 	{
 
 		int tid = omp_get_thread_num();
 		int max = omp_get_max_threads();
 
-		for (k = (int)(tid * PADDING_GRID * PADDING_GRID * PADDING_GRID/max);
-			k <(int)((tid+1) * PADDING_GRID * PADDING_GRID * PADDING_GRID/max); k++){
+		for (size_t x = (int)(tid * size_vec_x/max); x < (int)((tid+1) * size_vec_x/max);x++){
+			for (size_t y = 0; y < size_vec_y; y++){
+				for (size_t z = 0; z < size_vec_z; z++){
 
-			// Time integraion using euler method
-			for (int i = 0; i < agents[k].size(); i++)
-			{
-				agents[k][i].velocity += dt * agents[k][i].direction;
+					k = x * size_vec_y * size_vec_z + y * size_vec_z + z;
 
-				double speed = agents[k][i].velocity.norm() / max_speed;
-				if (speed > 1. && speed > 0.)
-				{
-					agents[k][i].velocity /= speed;
+					// Time integraion using euler method
+					for (int i = 0; i < agents[k].size(); i++)
+					{
+						agents[k][i].velocity += dt * agents[k][i].direction;
+
+						double speed = agents[k][i].velocity.norm() / max_speed;
+						if (speed > 1. && speed > 0.)
+						{
+							agents[k][i].velocity /= speed;
+						}
+						agents[k][i].position += dt * agents[k][i].velocity;
+
+						if (agents[k][i].position.x < 40)
+							agents[k][i].position.x = lx - 40;
+						if (agents[k][i].position.x > lx - 40)
+							agents[k][i].position.x = 40;
+						if (agents[k][i].position.y < 40)
+							agents[k][i].position.y = ly - 40;
+						if (agents[k][i].position.y > ly - 40)
+							agents[k][i].position.y = 40;
+						if (agents[k][i].position.z < 40)
+							agents[k][i].position.z = lz - 40;
+						if (agents[k][i].position.z > lz - 40)
+							agents[k][i].position.z = 40;
+
+						if (((int)(agents[k][i].position.x/PADDING_GRID) != x) ||
+							((int)(agents[k][i].position.y/PADDING_GRID) != y) ||
+							((int)(agents[k][i].position.z/PADDING_GRID) != z)){
+							#pragma omp critical
+							{
+								Agent a_to_move = agents[k][i];
+								agents[k].erase(agents[k].begin() + i);
+								int new_x = (int)(agents[k][i].position.x/PADDING_GRID);
+								int new_y = (int)(agents[k][i].position.y/PADDING_GRID);
+								int new_z = (int)(agents[k][i].position.z/PADDING_GRID);
+								agents[new_x * size_vec_y * size_vec_z + new_y * size_vec_z + new_z].push_back(a_to_move);
+							}
+						}
+					}
 				}
-				agents[k][i].position += dt * agents[k][i].velocity;
-
-				if (agents[k][i].position.x < 40)
-					agents[k][i].position.x = lx - 40;
-				if (agents[k][i].position.x > lx - 40)
-					agents[k][i].position.x = 40;
-				if (agents[k][i].position.y < 40)
-					agents[k][i].position.y = ly - 40;
-				if (agents[k][i].position.y > ly - 40)
-					agents[k][i].position.y = 40;
-				if (agents[k][i].position.z < 40)
-					agents[k][i].position.z = lz - 40;
-				if (agents[k][i].position.z > lz - 40)
-					agents[k][i].position.z = 40;
 			}
 		}
 	}
@@ -199,8 +222,8 @@ void Workspace::simulate(int nsteps)
 		this->move();
 		cout << "steps " << step << endl;
 		// store every 20 steps
-		// if (step % 20 == 0)
-		// 	save(step);
+		if (step % 20 == 0)
+			save(step);
 	}
 	cout << "FINISHED" << endl;
 }
@@ -213,9 +236,13 @@ void Workspace::save(int stepid)
 
 	myfile << std::endl;
 	myfile << na << std::endl;
-	for (size_t p = 0; p < agents.size(); p++)
-		for (size_t i = 0; i < agents[p].size(); i++)
+	cout << "NUMBER OF AGENTS " << agents.size() << endl;
+	for (size_t p = 0; p < agents.size(); p++){
+		for (size_t i = 0; i < agents[p].size(); i++){
 			myfile << "B " << agents[p][i].position;
+		}
+	}
+	cout << "FINISHED WRITING FILE" << "\n";
 
 	myfile.close();
 }
