@@ -2,6 +2,11 @@
 
 Agent::Agent()
 {
+	position = Vector(0, 0, 0);
+	velocity = Vector(0, 0, 0);
+	direction = Vector(0, 0, 0);
+	max_speed = 0.0;
+	max_force = 0.0;
 }
 
 Agent::Agent(const Vector &pos, const Vector &vel, const Vector &dir)

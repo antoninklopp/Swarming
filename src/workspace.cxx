@@ -57,6 +57,8 @@ void Workspace::init()
 		int tid = omp_get_thread_num();
 		int max = omp_get_max_threads();
 
+		cout << "threads " << tid << endl;
+
 		// Initialize agents
 		// This loop may be quite expensive due to random number generation
 		for (k = (int)(na * tid / max); k < (int)(na * (tid + 1) / max); k++)
@@ -93,6 +95,7 @@ void Workspace::move()
 		{
 			agents[k].compute_force(agents, k, rCohesion);
 
+			#pragma omp critical
 			agents[k].direction = agents[k].cohesion * wCohesion + agents[k].alignment * wAlignment + agents[k].separation * wSeparation;
 		}
 	}
@@ -141,10 +144,12 @@ void Workspace::simulate(int nsteps)
 	while (step++ < nsteps)
 	{
 		this->move();
+		cout << "steps " << step << endl;
 		// store every 20 steps
-		if (step % 20 == 0)
-			save(step);
+		// if (step % 20 == 0)
+		// 	save(step);
 	}
+	cout << "FINISHED" << endl;
 }
 
 void Workspace::save(int stepid)
