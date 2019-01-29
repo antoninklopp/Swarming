@@ -5,6 +5,8 @@
 Agent::Agent()
 {
 	move = false;
+	number = NUMBER_BOIDS;
+	NUMBER_BOIDS ++;
 }
 
 Agent::Agent(const Vector &pos, const Vector &vel, const Vector &dir) : Agent()
@@ -26,9 +28,13 @@ void Agent::compute_force(vector<vector<Agent> > &agent_list, size_t index_list,
 	int size_vec_y = (int)(ly / PADDING_GRID);
 	int size_vec_z = (int)(lz / PADDING_GRID);
 
-	move = false; 
+	move = false;
 
 	int max_dist = std::max({rs, rc, ra});
+
+	if (number == 59){
+		cout << "position boids " << position.x << " " << position.y << " " << position.z << endl;
+	}
 
 	int count_c = 0, count_s = 0, count_a = 0;
 	for (int x = index_x - (int)(max_dist/PADDING_GRID); x < (index_x + (int)(max_dist/PADDING_GRID)) && (int)(lx/PADDING_GRID); x++){

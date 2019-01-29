@@ -132,6 +132,11 @@ void Workspace::move()
 							for (size_t z = (int)((div_z * size_vec_z)/PADDING_CORE); z < (int)(((div_z+1) * size_vec_z)/PADDING_CORE); z++){
 								k = x * size_vec_y * size_vec_z + y * size_vec_z + z;
 								for (size_t i = 0; i < agents[k].size(); i++){
+
+									if (agents[k][i].number == 59){
+										cout << "59  OK" << endl; 
+									}
+
 									agents[k][i].compute_force(agents, i, x, y, z, lx, ly, lz, rCohesion);
 
 									#pragma omp critical
@@ -200,12 +205,12 @@ void Workspace::move()
 							#pragma omp critical
 							{
 								Agent a_to_move = agents[k][i];
-								agents[k].erase(agents[k].begin() + i);
 								int new_x = (int)(a_to_move.position.x/PADDING_GRID);
 								int new_y = (int)(a_to_move.position.y/PADDING_GRID);
 								int new_z = (int)(a_to_move.position.z/PADDING_GRID);
 								agents[new_x * size_vec_y * size_vec_z + new_y * size_vec_z + new_z].push_back(a_to_move);
 								agents[new_x * size_vec_y * size_vec_z + new_y * size_vec_z + new_z].back().move = true;
+								agents[k].erase(agents[k].begin() + i);
 							}
 						}
 					}
@@ -243,12 +248,14 @@ void Workspace::save(int stepid)
 	myfile << std::endl;
 	myfile << na << std::endl;
 	cout << "NUMBER OF AGENTS " << agents.size() << endl;
+	int elements = 0;
 	for (size_t p = 0; p < agents.size(); p++){
 		for (size_t i = 0; i < agents[p].size(); i++){
 			myfile << "B " << agents[p][i].position;
+			elements ++;
 		}
 	}
-	cout << "FINISHED WRITING FILE" << "\n";
+	cout << "FINISHED WRITING FILE " << elements << "\n";
 
 	myfile.close();
 }

@@ -16,6 +16,8 @@ typedef enum
 	wall
 } AgentType;
 
+static int NUMBER_BOIDS = 0;
+
 class Agent
 {
   public:
@@ -33,7 +35,9 @@ class Agent
 	// Distance of influence
 	double rc, rs, ra;
 
-	bool move; 
+	bool move;
+
+	int number;
 
 	Agent();
 
