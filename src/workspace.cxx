@@ -124,9 +124,9 @@ void Workspace::move()
 		for (int div_x = 0; div_x < PADDING_CORE; div_x ++){
 			for (int div_y = 0; div_y < PADDING_CORE; div_y ++){
 				for (int div_z = 0; div_z < PADDING_CORE; div_z ++){
-					if (div_x * PADDING_CORE * PADDING_CORE + div_y * PADDING_CORE + div_z % max != tid){
-						continue;
-					}
+					if ((div_x * PADDING_CORE * PADDING_CORE + div_y * PADDING_CORE + div_z) % max != tid){
+						continue; 
+					} 
 					for (size_t x = (int)((div_x * size_vec_x)/PADDING_CORE); x < (int)(((div_x+1) * size_vec_x)/PADDING_CORE); x++){
 						for (size_t y = (int)((div_y * size_vec_y)/PADDING_CORE); y < (int)(((div_y+1) * size_vec_y)/PADDING_CORE); y++){
 							for (size_t z = (int)((div_z * size_vec_z)/PADDING_CORE); z < (int)(((div_z+1) * size_vec_z)/PADDING_CORE); z++){

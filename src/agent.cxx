@@ -32,14 +32,14 @@ void Agent::compute_force(vector<vector<Agent> > &agent_list, size_t index_list,
 
 	int max_dist = std::max({rs, rc, ra});
 
-	if (number == 59){
-		cout << "position boids " << position.x << " " << position.y << " " << position.z << endl;
-	}
+	// if (number == 59){
+	// 	cout << "position boids " << position.x << " " << position.y << " " << position.z << endl;
+	// }
 
 	int count_c = 0, count_s = 0, count_a = 0;
-	for (int x = index_x - (int)(max_dist/PADDING_GRID); x < (index_x + (int)(max_dist/PADDING_GRID)) && (int)(lx/PADDING_GRID); x++){
-		for (int y = index_y - (int)(max_dist/PADDING_GRID); y < (index_y + (int)(max_dist/PADDING_GRID)) && (int)(ly/PADDING_GRID); y++){
-			for (int z = index_z - (int)(max_dist/PADDING_GRID); z < (index_z + (int)(max_dist/PADDING_GRID)) && (int)(lz/PADDING_GRID); z++){
+	for (int x = max((int)(index_x - (int)(max_dist/PADDING_GRID) - 1), 0); (x < (index_x + (int)(max_dist/PADDING_GRID)) + 1) && (x < size_vec_x); x++){
+		for (int y = max((int)(index_y - (int)(max_dist/PADDING_GRID)-1), 0); (y < (index_y + (int)(max_dist/PADDING_GRID)) + 1) && (y<(int)(ly/PADDING_GRID)); y++){
+			for (int z = max((int)(index_z - (int)(max_dist/PADDING_GRID)-1), 0); (z < (index_z + (int)(max_dist/PADDING_GRID))+1) && (z<(int)(lz/PADDING_GRID)); z++){
 				int k = x * size_vec_y * size_vec_z + y * size_vec_z + z;
 				vector<Agent> current_list = agent_list[k];
 				for (size_t i = 0; i < current_list.size(); i++)
@@ -64,6 +64,11 @@ void Agent::compute_force(vector<vector<Agent> > &agent_list, size_t index_list,
 				}
 			}
 		}
+	}
+
+	if (number == 2000){
+		cout << "influence " << count_s << " " << count_a << " " << count_c << endl; 
+		cout << "velocity" << velocity.x << " " << velocity.y << endl; 
 	}
 
 	// Compute separation contribution
