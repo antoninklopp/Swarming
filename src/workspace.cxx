@@ -50,12 +50,14 @@ void Workspace::init()
 	// Random generator seed
 	srand48(std::time(0));
 
-	int number_grid_case = PADDING_GRID * PADDING_GRID * PADDING_GRID;
+	cout << "number boids "<< na << endl;
 
 	int k = 0;
 	int size_vec_x = (int)(lx / PADDING_GRID);
 	int size_vec_y = (int)(ly / PADDING_GRID);
 	int size_vec_z = (int)(lz / PADDING_GRID);
+
+	int number_grid_case = size_vec_x * size_vec_y * size_vec_z;
 
 	agents.resize(size_vec_x * size_vec_y * size_vec_z);
 
@@ -179,8 +181,9 @@ void Workspace::move()
 
 						if (agents[k][i].position.x < 40)
 							agents[k][i].position.x = lx - 40;
-						if (agents[k][i].position.x > lx - 40)
+						if (agents[k][i].position.x > lx - 40){
 							agents[k][i].position.x = 40;
+						}
 						if (agents[k][i].position.y < 40)
 							agents[k][i].position.y = ly - 40;
 						if (agents[k][i].position.y > ly - 40)
@@ -190,20 +193,23 @@ void Workspace::move()
 						if (agents[k][i].position.z > lz - 40)
 							agents[k][i].position.z = 40;
 
-						if (((int)(agents[k][i].position.x/PADDING_GRID) != x) ||
+						if ((((int)(agents[k][i].position.x/PADDING_GRID) != x) ||
 							((int)(agents[k][i].position.y/PADDING_GRID) != y) ||
-							((int)(agents[k][i].position.z/PADDING_GRID) != z)){
+							((int)(agents[k][i].position.z/PADDING_GRID) != z)) &&
+							(agents[k][i].move == false)){
 							#pragma omp critical
 							{
 								Agent a_to_move = agents[k][i];
 								agents[k].erase(agents[k].begin() + i);
-								int new_x = (int)(agents[k][i].position.x/PADDING_GRID);
-								int new_y = (int)(agents[k][i].position.y/PADDING_GRID);
-								int new_z = (int)(agents[k][i].position.z/PADDING_GRID);
+								int new_x = (int)(a_to_move.position.x/PADDING_GRID);
+								int new_y = (int)(a_to_move.position.y/PADDING_GRID);
+								int new_z = (int)(a_to_move.position.z/PADDING_GRID);
 								agents[new_x * size_vec_y * size_vec_z + new_y * size_vec_z + new_z].push_back(a_to_move);
+								agents[new_x * size_vec_y * size_vec_z + new_y * size_vec_z + new_z].back().move = true;
 							}
 						}
 					}
+					// cout << "size of grid for " << agents[x * size_vec_y * size_vec_z + y * size_vec_z + z].size() << endl;
 				}
 			}
 		}

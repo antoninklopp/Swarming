@@ -33,6 +33,8 @@ class Agent
 	// Distance of influence
 	double rc, rs, ra;
 
+	bool move; 
+
 	Agent();
 
 	Agent(const Vector &pos, const Vector &vel, const Vector &dir);

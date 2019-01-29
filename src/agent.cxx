@@ -4,9 +4,10 @@
 
 Agent::Agent()
 {
+	move = false;
 }
 
-Agent::Agent(const Vector &pos, const Vector &vel, const Vector &dir)
+Agent::Agent(const Vector &pos, const Vector &vel, const Vector &dir) : Agent()
 {
 	position = pos;
 	velocity = vel;
@@ -24,6 +25,8 @@ void Agent::compute_force(vector<vector<Agent> > &agent_list, size_t index_list,
 	int size_vec_x = (int)(lx / PADDING_GRID);
 	int size_vec_y = (int)(ly / PADDING_GRID);
 	int size_vec_z = (int)(lz / PADDING_GRID);
+
+	move = false; 
 
 	int max_dist = std::max({rs, rc, ra});
 
