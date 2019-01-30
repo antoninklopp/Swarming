@@ -1,10 +1,15 @@
 #include "agent.hxx"
+#include <initializer_list>
+#include <algorithm>
 
 Agent::Agent()
 {
+	move = false;
+	number = NUMBER_BOIDS;
+	NUMBER_BOIDS ++;
 }
 
-Agent::Agent(const Vector &pos, const Vector &vel, const Vector &dir)
+Agent::Agent(const Vector &pos, const Vector &vel, const Vector &dir) : Agent()
 {
 	position = pos;
 	velocity = vel;
@@ -13,32 +18,58 @@ Agent::Agent(const Vector &pos, const Vector &vel, const Vector &dir)
 	max_force = 20.0;
 }
 
-void Agent::compute_force(vector<Agent> &agent_list, size_t index, double rad)
+void Agent::compute_force(vector<vector<Agent> > &agent_list, size_t index_list, size_t index_x, size_t index_y, size_t index_z, Real lx, Real ly, Real lz, double rad)
 {
 	cohesion = Zeros();
 	alignment = Zeros();
 	separation = Zeros();
 
+	int size_vec_x = (int)(lx / PADDING_GRID);
+	int size_vec_y = (int)(ly / PADDING_GRID);
+	int size_vec_z = (int)(lz / PADDING_GRID);
+
+	move = false;
+
+	int max_dist = std::max({rs, rc, ra});
+
+	// if (number == 59){
+	// 	cout << "position boids " << position.x << " " << position.y << " " << position.z << endl;
+	// }
+
 	int count_c = 0, count_s = 0, count_a = 0;
-	for (size_t i = 0; i < agent_list.size(); i++)
-	{
-		Real dist = (this->position - agent_list[i].position).norm();
-		if (i != index && dist < rs && dist > 0.)
-		{
-			separation += (this->position - agent_list[i].position).normalized() / dist;
-			++count_s;
-		}
-		if (i != index && dist < ra)
-		{
-			alignment += agent_list[i].velocity;
-			++count_a;
-		}
-		if (i != index && dist < rc)
-		{
-			cohesion += agent_list[i].position;
-			++count_c;
+	for (int x = max((int)(index_x - (int)(max_dist/PADDING_GRID) - 1), 0); (x < (index_x + (int)(max_dist/PADDING_GRID)) + 1) && (x < size_vec_x); x++){
+		for (int y = max((int)(index_y - (int)(max_dist/PADDING_GRID)-1), 0); (y < (index_y + (int)(max_dist/PADDING_GRID)) + 1) && (y<(int)(ly/PADDING_GRID)); y++){
+			for (int z = max((int)(index_z - (int)(max_dist/PADDING_GRID)-1), 0); (z < (index_z + (int)(max_dist/PADDING_GRID))+1) && (z<(int)(lz/PADDING_GRID)); z++){
+				int k = x * size_vec_y * size_vec_z + y * size_vec_z + z;
+				vector<Agent> current_list = agent_list[k];
+				for (size_t i = 0; i < current_list.size(); i++)
+				{
+					Real dist = (this->position - current_list[i].position).norm();
+					bool checkNotCurrent = (i==index_list) && (x==index_x) && (y == index_y) && (z == index_z);
+					if (!checkNotCurrent && dist < rs && dist > 0.)
+					{
+						separation += (this->position - current_list[i].position).normalized() / dist;
+						++count_s;
+					}
+					if (!checkNotCurrent && dist < ra)
+					{
+						alignment += current_list[i].velocity;
+						++count_a;
+					}
+					if (!checkNotCurrent && dist < rc)
+					{
+						cohesion += current_list[i].position;
+						++count_c;
+					}
+				}
+			}
 		}
 	}
+
+	// if (number == 2000){
+	// 	cout << "influence " << count_s << " " << count_a << " " << count_c << endl;
+	// 	cout << "velocity" << velocity.x << " " << velocity.y << endl;
+	// }
 
 	// Compute separation contribution
 	if (count_s > 0)
