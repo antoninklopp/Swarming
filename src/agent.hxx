@@ -16,11 +16,12 @@ typedef enum
 	wall
 } AgentType;
 
-static int NUMBER_BOIDS = 0;
-
 class Agent
 {
   public:
+
+	static int NUMBER_BOIDS;
+	static void reinit_number(){Agent::NUMBER_BOIDS=0;}
 	Vector position;
 	Vector velocity;
 	Vector direction;
@@ -48,5 +49,4 @@ class Agent
 
 	size_t find_closest(vector<Agent> &agent_list, size_t index);
 };
-
 #endif

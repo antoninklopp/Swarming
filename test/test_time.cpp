@@ -22,7 +22,6 @@ void test(int number_agents, int steps, float padding)
 	parser.addOption("rc", 90);
 	parser.addOption("ra", 90);
 	parser.addOption("rs", 25);
-	parser.addOption("padding_grid", padding);
 
 	// Create workspace
 	Workspace workspace(parser);
@@ -43,14 +42,14 @@ int main(){
 		//     printf("Time taken for %i steps: %.5fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC, steps);
 		// }
 
-		for (int PADDING = 25; PADDING < 800; PADDING+=5){
+		for (int agents = 1000; agents < 30000; agents+=1000){
 				elapsed = 0;
 				clock_gettime(CLOCK_MONOTONIC, &start);
-				test(10000, 20, PADDING);
+				test(agents, 20, 50);
 				clock_gettime(CLOCK_MONOTONIC, &finish);
 
 				elapsed = (finish.tv_sec - start.tv_sec);
 				elapsed += (finish.tv_nsec - start.tv_nsec) / 1000000000.0;
-				printf("Time taken for %i agents: %.5f s\n", elapsed, PADDING);
+				printf("Time taken for %i agents: %.5f s\n", elapsed, agents);
 		}
 }

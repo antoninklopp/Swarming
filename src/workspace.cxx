@@ -21,12 +21,11 @@ Workspace::Workspace(ArgumentParser &parser)
 	rCohesion = parser("rc").asDouble();
 	rAlignment = parser("ra").asDouble();
 	rSeparation = parser("rs").asDouble();
-	PADDING_GRID = (float)parser("padding_grid").asDouble();
 
 	dt = 0.01;
 	max_speed = 20.0;
 	max_force = 80.0;
-	cout << "size" << agents.size() << endl;
+	Agent::reinit_number();
 	time = 0.,
 
 	this->init();
@@ -81,6 +80,7 @@ void Workspace::init()
 						for (size_t y = (int)((div_y * size_vec_y)/PADDING_CORE); y < (int)(((div_y+1) * size_vec_y)/PADDING_CORE); y++){
 							for (size_t z = (int)((div_z * size_vec_z)/PADDING_CORE); z < (int)(((div_z+1) * size_vec_z)/PADDING_CORE); z++){
 								k = x * size_vec_y * size_vec_z + y * size_vec_z + z;
+								// Create as a random distribution
 								for (size_t i = 0; i < (int)(na/number_grid_case) + (drand48() < (((float)na/number_grid_case) - (int)(na/number_grid_case)))?1:0; i++){
 									// Create random position
 									//Vector position(lx*(0.02 + drand48()), ly*(0.02 + drand48()), lz*(0.02 + drand48()));

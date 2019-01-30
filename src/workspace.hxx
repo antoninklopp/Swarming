@@ -7,7 +7,7 @@
 #include "types.hxx"
 
 const int PADDING_CORE=4;
-static float PADDING_GRID;
+const float PADDING_GRID=50;
 
 using namespace std;
 

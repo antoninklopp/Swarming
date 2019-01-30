@@ -2,6 +2,9 @@
 #include <initializer_list>
 #include <algorithm>
 
+int Agent::NUMBER_BOIDS;
+
+
 Agent::Agent()
 {
 	move = false;
@@ -20,6 +23,7 @@ Agent::Agent(const Vector &pos, const Vector &vel, const Vector &dir) : Agent()
 
 void Agent::compute_force(vector<vector<Agent> > &agent_list, size_t index_list, size_t index_x, size_t index_y, size_t index_z, Real lx, Real ly, Real lz, double rad)
 {
+
 	cohesion = Zeros();
 	alignment = Zeros();
 	separation = Zeros();
@@ -31,10 +35,6 @@ void Agent::compute_force(vector<vector<Agent> > &agent_list, size_t index_list,
 	move = false;
 
 	int max_dist = std::max({rs, rc, ra});
-
-	// if (number == 59){
-	// 	cout << "position boids " << position.x << " " << position.y << " " << position.z << endl;
-	// }
 
 	int count_c = 0, count_s = 0, count_a = 0;
 	for (int x = max((int)(index_x - (int)(max_dist/PADDING_GRID) - 1), 0); (x < (index_x + (int)(max_dist/PADDING_GRID)) + 1) && (x < size_vec_x); x++){
