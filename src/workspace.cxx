@@ -50,9 +50,10 @@ void Workspace::init()
 	// Random generator seed
 	srand48(std::time(0));
 
-#pragma omp parallel
+	int k = 0;
+
+#pragma omp parallel private(k)
 	{
-		int k = 0;
 
 		int tid = omp_get_thread_num();
 		int max = omp_get_max_threads();
@@ -84,7 +85,7 @@ void Workspace::move()
 
 	int k = 0;
 
-#pragma omp parallel
+#pragma omp parallel private(k)
 	{
 
 		int tid = omp_get_thread_num();
@@ -100,7 +101,7 @@ void Workspace::move()
 		}
 	}
 
-#pragma omp parallel
+#pragma omp parallel private(k)
 	{
 
 		int tid = omp_get_thread_num();
