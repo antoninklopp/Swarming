@@ -3,3 +3,4 @@ boids
 boids.xyz
 bin/
 .vscode/
+*.txt
