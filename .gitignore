@@ -4,3 +4,4 @@ boids.xyz
 bin/
 .vscode/
 res*.txt
+*.gif

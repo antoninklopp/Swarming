@@ -42,7 +42,7 @@ int main(){
 		//     printf("Time taken for %i steps: %.5fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC, steps);
 		// }
 
-		for (int agents = 1000; agents < 30000; agents+=1000){
+		for (int agents = 25000; agents < 100000; agents+=10000){
 				elapsed = 0;
 				clock_gettime(CLOCK_MONOTONIC, &start);
 				test(agents, 20);
