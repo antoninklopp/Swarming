@@ -96,7 +96,6 @@ void Workspace::move()
 		{
 			agents[k].compute_force(agents, k, rCohesion);
 
-			#pragma omp critical
 			agents[k].direction = agents[k].cohesion * wCohesion + agents[k].alignment * wAlignment + agents[k].separation * wSeparation;
 		}
 	}
