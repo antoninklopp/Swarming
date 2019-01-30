@@ -50,6 +50,6 @@ int main(){
 
 				elapsed = (finish.tv_sec - start.tv_sec);
 				elapsed += (finish.tv_nsec - start.tv_nsec) / 1000000000.0;
-        printf("Time taken for %i agents: %.5fs\n", elapsed, agents);
+        printf("Time taken for %i agents: %.5f s\n", elapsed, agents);
     }
 }
