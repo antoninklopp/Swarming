@@ -7,7 +7,7 @@
 #include <time.h>
 
 // Main class for running the parallel flocking sim
-void test(int number_agents, int steps)
+void test(int number_agents, int steps, float padding)
 {
 	// Create parser
 	ArgumentParser parser;
@@ -22,6 +22,7 @@ void test(int number_agents, int steps)
 	parser.addOption("rc", 90);
 	parser.addOption("ra", 90);
 	parser.addOption("rs", 25);
+	parser.addOption("padding_grid", padding);
 
 	// Create workspace
 	Workspace workspace(parser);
@@ -42,14 +43,14 @@ int main(){
 		//     printf("Time taken for %i steps: %.5fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC, steps);
 		// }
 
-		for (int agents = 25000; agents < 100000; agents+=10000){
+		for (int PADDING = 25; PADDING < 800; PADDING+=5){
 				elapsed = 0;
 				clock_gettime(CLOCK_MONOTONIC, &start);
-				test(agents, 20);
+				test(10000, 20, PADDING);
 				clock_gettime(CLOCK_MONOTONIC, &finish);
 
 				elapsed = (finish.tv_sec - start.tv_sec);
 				elapsed += (finish.tv_nsec - start.tv_nsec) / 1000000000.0;
-				printf("Time taken for %i agents: %.5f s\n", elapsed, agents);
+				printf("Time taken for %i agents: %.5f s\n", elapsed, PADDING);
 		}
 }

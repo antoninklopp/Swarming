@@ -6,8 +6,8 @@
 #include "parser.hxx"
 #include "types.hxx"
 
-const float PADDING_GRID=50;
 const int PADDING_CORE=4;
+static float PADDING_GRID;
 
 using namespace std;
 

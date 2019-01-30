@@ -23,6 +23,7 @@ int main(int argc, char **argv)
 	parser.addOption("rc", 90);
 	parser.addOption("ra", 90);
 	parser.addOption("rs", 25);
+	parser.addOption("padding_grid", 50);
 
 	// Parse command line arguments
 	parser.setOptions(argc, argv);
