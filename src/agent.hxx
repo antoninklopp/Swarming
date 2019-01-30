@@ -15,6 +15,8 @@ typedef enum
 	wall
 } AgentType;
 
+static int NUMBER_BOIDS = 0;
+
 class Agent
 {
   public:
@@ -28,6 +30,8 @@ class Agent
 
 	double max_speed;
 	double max_force;
+
+	int number; 
 
 	// Distance of influence
 	double rc, rs, ra;

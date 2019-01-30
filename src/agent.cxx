@@ -7,6 +7,8 @@ Agent::Agent()
 	direction = Vector(0, 0, 0);
 	max_speed = 0.0;
 	max_force = 0.0;
+	number = NUMBER_BOIDS;
+	NUMBER_BOIDS ++;
 }
 
 Agent::Agent(const Vector &pos, const Vector &vel, const Vector &dir)
@@ -16,6 +18,8 @@ Agent::Agent(const Vector &pos, const Vector &vel, const Vector &dir)
 	direction = dir;
 	max_speed = 80.0;
 	max_force = 20.0;
+	number = NUMBER_BOIDS;
+	NUMBER_BOIDS ++;
 }
 
 void Agent::compute_force(vector<Agent> &agent_list, size_t index, double rad)
@@ -43,6 +47,10 @@ void Agent::compute_force(vector<Agent> &agent_list, size_t index, double rad)
 			cohesion += agent_list[i].position;
 			++count_c;
 		}
+	}
+
+	if (number == 2000){
+		cout << "influence " << count_s << " " << count_c << " " << count_a << endl;
 	}
 
 	// Compute separation contribution
