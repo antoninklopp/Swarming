@@ -15,7 +15,7 @@ int main(int argc, char **argv)
 
 	// Add options to parser
 	parser.addOption("agents", 10000);
-	parser.addOption("steps", 100);
+	parser.addOption("steps", 200);
 	parser.addOption("wc", 1.0); //7.0);
 	parser.addOption("wa", 1.0); // 12.0);
 	parser.addOption("ws", 1.5); // 55.0);

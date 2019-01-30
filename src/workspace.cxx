@@ -67,8 +67,6 @@ void Workspace::init()
 		int tid = omp_get_thread_num();
 		int max = omp_get_max_threads();
 
-		cout << "threads " << tid << endl;
-
 		// Initialize agents
 		// This loop may be quite expensive due to random number generation
 		for (int div_x = 0; div_x < PADDING_CORE; div_x ++){
@@ -125,17 +123,13 @@ void Workspace::move()
 			for (int div_y = 0; div_y < PADDING_CORE; div_y ++){
 				for (int div_z = 0; div_z < PADDING_CORE; div_z ++){
 					if ((div_x * PADDING_CORE * PADDING_CORE + div_y * PADDING_CORE + div_z) % max != tid){
-						continue; 
-					} 
+						continue;
+					}
 					for (size_t x = (int)((div_x * size_vec_x)/PADDING_CORE); x < (int)(((div_x+1) * size_vec_x)/PADDING_CORE); x++){
 						for (size_t y = (int)((div_y * size_vec_y)/PADDING_CORE); y < (int)(((div_y+1) * size_vec_y)/PADDING_CORE); y++){
 							for (size_t z = (int)((div_z * size_vec_z)/PADDING_CORE); z < (int)(((div_z+1) * size_vec_z)/PADDING_CORE); z++){
 								k = x * size_vec_y * size_vec_z + y * size_vec_z + z;
 								for (size_t i = 0; i < agents[k].size(); i++){
-
-									if (agents[k][i].number == 59){
-										cout << "59  OK" << endl; 
-									}
 
 									agents[k][i].compute_force(agents, i, x, y, z, lx, ly, lz, rCohesion);
 
@@ -231,7 +225,7 @@ void Workspace::simulate(int nsteps)
 	while (step++ < nsteps)
 	{
 		this->move();
-		cout << "steps " << step << endl;
+		// cout << "steps " << step << endl;
 		// store every 20 steps
 		if (step % 20 == 0)
 			save(step);
@@ -247,7 +241,7 @@ void Workspace::save(int stepid)
 
 	myfile << std::endl;
 	myfile << na << std::endl;
-	cout << "NUMBER OF AGENTS " << agents.size() << endl;
+	// cout << "NUMBER OF AGENTS " << agents.size() << endl;
 	int elements = 0;
 	for (size_t p = 0; p < agents.size(); p++){
 		for (size_t i = 0; i < agents[p].size(); i++){
@@ -255,7 +249,7 @@ void Workspace::save(int stepid)
 			elements ++;
 		}
 	}
-	cout << "FINISHED WRITING FILE " << elements << "\n";
+	// cout << "FINISHED WRITING FILE " << elements << "\n";
 
 	myfile.close();
 }

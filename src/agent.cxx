@@ -66,10 +66,10 @@ void Agent::compute_force(vector<vector<Agent> > &agent_list, size_t index_list,
 		}
 	}
 
-	if (number == 2000){
-		cout << "influence " << count_s << " " << count_a << " " << count_c << endl; 
-		cout << "velocity" << velocity.x << " " << velocity.y << endl; 
-	}
+	// if (number == 2000){
+	// 	cout << "influence " << count_s << " " << count_a << " " << count_c << endl;
+	// 	cout << "velocity" << velocity.x << " " << velocity.y << endl;
+	// }
 
 	// Compute separation contribution
 	if (count_s > 0)
