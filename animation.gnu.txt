@@ -1,0 +1,6 @@
+set terminal gif animate delay 0.002
+set output "multiplot_animated.gif"
+n = 100
+do for [i=0:(n-1)] {
+    splot 'boids.xyz' using 2:3:4 every :::i::i pt 7 lc 3
+}
