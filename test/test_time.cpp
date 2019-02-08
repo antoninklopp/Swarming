@@ -7,7 +7,7 @@
 #include <time.h>
 
 // Main class for running the parallel flocking sim
-void test(int number_agents, int steps, float padding)
+void test(int number_agents, int steps)
 {
 	// Create parser
 	ArgumentParser parser;
@@ -42,10 +42,10 @@ int main(){
 		//     printf("Time taken for %i steps: %.5fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC, steps);
 		// }
 
-		for (int agents = 1000; agents < 30000; agents+=1000){
+		for (int agents = 10000; agents < 11000; agents+=1000){
 				elapsed = 0;
 				clock_gettime(CLOCK_MONOTONIC, &start);
-				test(agents, 20, 50);
+				test(agents, 20);
 				clock_gettime(CLOCK_MONOTONIC, &finish);
 
 				elapsed = (finish.tv_sec - start.tv_sec);
