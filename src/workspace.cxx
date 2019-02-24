@@ -145,15 +145,6 @@ void Workspace::move()
 				}
 			}
 		}
-
-		// Time integraion using euler method
-		// for (k = (int)(na * tid / max); k < (int)(na * (tid + 1) / max); k++)
-		// {
-		// 	agents[k].compute_force(agents, k, rCohesion);
-		//
-		// 	#pragma omp critical
-		// 	agents[k].direction = agents[k].cohesion * wCohesion + agents[k].alignment * wAlignment + agents[k].separation * wSeparation;
-		// }
 	}
 
 #pragma omp parallel private(k) shared(size_vec_z, size_vec_y, size_vec_x)
@@ -210,7 +201,6 @@ void Workspace::move()
 							}
 						}
 					}
-					// cout << "size of grid for " << agents[x * size_vec_y * size_vec_z + y * size_vec_z + z].size() << endl;
 				}
 			}
 		}
