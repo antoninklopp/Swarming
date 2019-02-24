@@ -32,24 +32,18 @@ void test(int number_agents, int steps)
 }
 
 int main(){
-		clock_t tStart = clock();
-		struct timespec start, finish;
-		double elapsed;
+	clock_t tStart = clock();
+	struct timespec start, finish;
+	double elapsed;
 
-		// for (int steps = 10; steps < 300; steps+=10){
-		//     tStart = clock();
-		//     test(10000, steps);
-		//     printf("Time taken for %i steps: %.5fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC, steps);
-		// }
+	for (int agents = 1000; agents < 11000; agents+=1000){
+		elapsed = 0;
+		clock_gettime(CLOCK_MONOTONIC, &start);
+		test(agents, 20);
+		clock_gettime(CLOCK_MONOTONIC, &finish);
 
-		for (int agents = 10000; agents < 11000; agents+=1000){
-				elapsed = 0;
-				clock_gettime(CLOCK_MONOTONIC, &start);
-				test(agents, 20);
-				clock_gettime(CLOCK_MONOTONIC, &finish);
-
-				elapsed = (finish.tv_sec - start.tv_sec);
-				elapsed += (finish.tv_nsec - start.tv_nsec) / 1000000000.0;
-				printf("Time taken for %i agents: %.5f s\n", elapsed, agents);
-		}
+		elapsed = (finish.tv_sec - start.tv_sec);
+		elapsed += (finish.tv_nsec - start.tv_nsec) / 1000000000.0;
+		printf("Time taken for %i agents: %.5f s\n", agents, elapsed);
+	}
 }
